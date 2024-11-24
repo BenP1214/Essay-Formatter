@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay Formatter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            text-align: center;
+            background: #007bff;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        select, input {
+            display: block;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Essay Formatter</h1>
+        <p>Paste your essay below, select a style, and generate a formatted essay!</p>
+    </header>
+    <div class="container">
+        <textarea id="essayInput" placeholder="Paste your essay here..."></textarea>
+        <input type="text" id="essayTitle" placeholder="Enter your essay title">
+        <input type="text" id="authorName" placeholder="Enter your name">
+        <input type="text" id="institutionName" placeholder="Enter your institution (if applicable)">
+        <select id="formatSelect">
+            <option value="apa">APA</option>
+            <option value="mla">MLA</option>
+            <option value="chicago">Chicago</option>
+        </select>
+        <button onclick="formatEssay()">Generate Essay</button>
+        <button onclick="downloadEssay()">Download as File</button>
+
+        <!-- Citation Section -->
+        <h3>Generate Citation</h3>
+        <input type="text" id="citationURL" placeholder="Enter URL for Citation">
+        <button onclick="generateCitation()">Generate Citation</button>
+        <div id="citationOutput" class="output"></div>
+
+        <div id="output" class="output"></div>
+    </div>
+    
+    <script>
+        function formatEssay() {
+            const essay = document.getElementById("essayInput").value.trim();
+            const format = document.getElementById("formatSelect").value;
+            const title = document.getElementById("essayTitle").value.trim();
+            const author = document.getElementById("authorName").value.trim();
+            const institution = document.getElementById("institutionName").value.trim();
+
+            if (!essay) {
+                alert("Please paste your essay into the box before formatting.");
+                return;
+            }
+
+            if (!title || !author) {
+                alert("Please fill in the title and author name.");
+                return;
+            }
+
+            let formattedEssay = "";
+
+            switch (format) {
+                case "apa":
+                    formattedEssay = `
+                        <h1 style="text-align: center;">${title}</h1>
+                        <h2 style="text-align: center;">${author}</h2>
+                        <h3 style="text-align: center;">${institution}</h3>
+                        <p style="text-indent: 50px; font-family: 'Times New Roman', Times, serif; line-height: 2; font-size: 12pt;">
+                        ${essay.replace(/\n/g, "</p><p style='text-indent: 50px; font-family: \"Times New Roman\", Times, serif; line-height: 2; font-size: 12pt;'>")}
+                        </p>
+                    `;
+                    break;
+                case "mla":
+                    formattedEssay = `
+                        <p style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; margin-left: 1in; margin-right: 1in;">
+                        ${author}<br>${institution}<br>${title}<br></p>
+                        <p style="font-family: 'Times New Roman', Times, serif; line-height: 2; font-size: 12pt; margin-left: 1in; margin-right: 1in; text-indent: 50px;">
+                        ${essay.replace(/\n/g, "</p><p style='font-family: \"Times New Roman\", Times, serif; line-height: 2; font-size: 12pt; margin-left: 1in; margin-right: 1in; text-indent: 50px;'>")}
+                        </p>
+                    `;
+                    break;
+                case "chicago":
+                    formattedEssay = `
+                        <h1 style="text-align: center;">${title}</h1>
+                        <h2 style="text-align: center;">${author}</h2>
+                        <h3 style="text-align: center;">${institution}</h3>
+                        <p style="text-indent: 50px; font-family: 'Times New Roman', Times, serif; line-height: 1.5; font-size: 12pt;">
+                        ${essay.replace(/\n/g, "</p><p style='text-indent: 50px; font-family: \"Times New Roman\", Times, serif; line-height: 1.5; font-size: 12pt;'>")}
+                        </p>
+                    `;
+                    break;
+                default:
+                    alert("Invalid format selected.");
+                    return;
+            }
+
+            document.getElementById("output").innerHTML = formattedEssay;
+        }
+
+        function downloadEssay() {
+            const outputContent = document.getElementById("output").innerHTML;
+
+            if (!outputContent) {
+                alert("Please generate your essay first!");
+                return;
+            }
+
+            const blob = new Blob([outputContent], { type: "text/html" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "formatted_essay.html";
+            link.click();
+        }
+
+        function generateCitation() {
+            const citationURL = document.getElementById("citationURL").value.trim();
+            
+            if (!citationURL) {
+                alert("Please enter a URL to generate a citation.");
+                return;
+            }
+
+            // Here, we simulate the process of generating a citation.
+            // Normally, you'd use an API (e.g., CrossRef, Zotero, etc.) to fetch metadata.
+            // For simplicity, we mock the citation data here.
+
+            const citation = {
+                "apa": `APA Citation: Author. (Year). Title of the article. Retrieved from ${citationURL}`,
+                "mla": `MLA Citation: Author. "Title of the article." Website Name, Date of Publication, URL.`,
+                "chicago": `Chicago Citation: Author. "Title of the Article." Website Name, Last modified Date. ${citationURL}`
+            };
+
+            // Display the citation based on selected format
+            const format = document.getElementById("formatSelect").value;
+            document.getElementById("citationOutput").innerText = citation[format];
+        }
+    </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
